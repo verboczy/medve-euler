@@ -78,12 +78,12 @@ public class EulerCircle {
 
         // Test if we can take this edge.
         // 1. Count how many vertices are reachable now.
-        List<Integer> isVisited = new ArrayList<>(graph.getNumberOfVertices());
+        List<Integer> isVisited = new ArrayList<>();
         int countBeforeRemove = countReachableVertices(vertex, isVisited);
         // 2. Remove the edge under investigation.
         removeEdge(vertex, neighbor);
         // 3. Count how many vertices are reachable after the removal.
-        isVisited = new ArrayList<>(graph.getNumberOfVertices());
+        isVisited = new ArrayList<>();
         int countAfterRemove = countReachableVertices(vertex, isVisited);
         // 4. Restore the deleted edge, because we have not taken it yet, we have just tested it.
         addEdge(vertex, neighbor);

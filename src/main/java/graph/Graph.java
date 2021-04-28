@@ -12,19 +12,15 @@ import java.util.Map;
 @Data
 public class Graph {
 
-    private final int numberOfVertices;
-
     private Map<Integer, Vertex> vertices;
     private List<Edge> edges;
 
     private Map<Integer, List<Integer>> adjacencyList;
 
-    public Graph(final int numberOfVertices) {
-        this.numberOfVertices = numberOfVertices;
-
-        vertices = new HashMap<>();
-        edges = new ArrayList<>();
-        adjacencyList = new HashMap<>();
+    public Graph(final List<Vertex> vertices) {
+        this.vertices = new HashMap<>();
+        this.edges = new ArrayList<>();
+        this.adjacencyList = new HashMap<>();
     }
 
     public void addVertex(final Vertex vertex) {
@@ -57,7 +53,14 @@ public class Graph {
     }
 
     public Map<Integer, List<Integer>> copyAdjacencyList() {
-        return new HashMap<>(adjacencyList);
+        final Map<Integer, List<Integer>> copy = new HashMap<>();
+        for (Map.Entry<Integer, List<Integer>> entry : adjacencyList.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return copy;
     }
 
+    public boolean containsEdge(int vertexId1, int vertexId2) {
+        return adjacencyList.get(vertexId1).contains(vertexId2);
+    }
 }
