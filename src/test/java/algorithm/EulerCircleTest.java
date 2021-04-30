@@ -22,18 +22,12 @@ public class EulerCircleTest {
     @ParameterizedTest(name = "{index} - Starting from vertex {0}")
     void graph1_test(final int startingVertexId) {
         // Given
-        final Vertex vertex1 = new Vertex(1, "1");
-        final Vertex vertex2 = new Vertex(2, "2");
-        final Vertex vertex3 = new Vertex(3, "3");
-        final Vertex vertex4 = new Vertex(4, "4");
-        final Vertex vertex5 = new Vertex(5, "5");
-
         final Graph graph = new Graph();
-        graph.addVertex(vertex1);
-        graph.addVertex(vertex2);
-        graph.addVertex(vertex3);
-        graph.addVertex(vertex4);
-        graph.addVertex(vertex5);
+        graph.addVertex(new Vertex(1, "1"));
+        graph.addVertex(new Vertex(2, "2"));
+        graph.addVertex(new Vertex(3, "3"));
+        graph.addVertex(new Vertex(4, "4"));
+        graph.addVertex(new Vertex(5, "5"));
         graph.addEdge(new Edge(1, 2, DISTANCE));
         graph.addEdge(new Edge(1, 3, DISTANCE));
         graph.addEdge(new Edge(1, 4, DISTANCE));
@@ -55,13 +49,10 @@ public class EulerCircleTest {
         graph.addEdge(new Edge(5, 3, DISTANCE));
         graph.addEdge(new Edge(5, 4, DISTANCE));
 
-        assertEquals(graph.getAdjacencyList(), graph.getAdjacencyList());
-
         final EulerCircle eulerCircle = new EulerCircle(graph);
 
         // When
         eulerCircle.computeEulerCircle(startingVertexId);
-
 
         // Then
         checkSolution(graph);
