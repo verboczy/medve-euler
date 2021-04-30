@@ -3,24 +3,24 @@ package graph;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
 @Slf4j
 @Data
 public class Graph {
 
+    private static final String RESULT_LINE_TEMPLATE = "%d,%d,%d,%s,%s,%d,%d";
+
     private Map<Integer, Vertex> vertices;
     private List<Edge> edges;
 
-    private Map<Integer, List<Integer>> adjacencyList;
+    private List<Integer> eulerCircle;
 
-    public Graph(final List<Vertex> vertices) {
+    public Graph() {
         this.vertices = new HashMap<>();
         this.edges = new ArrayList<>();
-        this.adjacencyList = new HashMap<>();
+        this.eulerCircle = new ArrayList<>();
     }
 
     public void addVertex(final Vertex vertex) {
@@ -35,32 +35,60 @@ public class Graph {
     public void addEdge(final Edge edge) {
         edges.add(edge);
 
-        final int vertexIdentifier1 = edge.getVertexId1();
-        final int vertexIdentifier2 = edge.getVertexId2();
-
-        addToAdjacencyList(vertexIdentifier1, vertexIdentifier2);
-        addToAdjacencyList(vertexIdentifier2, vertexIdentifier1);
-    }
-
-    private void addToAdjacencyList(final int startingVertexId, final int endingVertexId) {
-        if (adjacencyList.containsKey(startingVertexId)) {
-            adjacencyList.get(startingVertexId).add(endingVertexId);
-        } else {
-            final List<Integer> endingVertices = new ArrayList<>();
-            endingVertices.add(endingVertexId);
-            adjacencyList.put(startingVertexId, endingVertices);
+        // If graph contains self loop, then add the edge one more times.
+        if (edge.getVertexId1() == edge.getVertexId2()) {
+            edges.add(edge);
         }
     }
 
-    public Map<Integer, List<Integer>> copyAdjacencyList() {
-        final Map<Integer, List<Integer>> copy = new HashMap<>();
-        for (Map.Entry<Integer, List<Integer>> entry : adjacencyList.entrySet()) {
-            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-        }
-        return copy;
+    public Map<Integer, List<Integer>> getAdjacencyList() {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        edges.forEach(edge -> {
+            int fromVertex = edge.getVertexId1();
+            int toVertex = edge.getVertexId2();
+            if (map.containsKey(fromVertex)) {
+                map.get(fromVertex).add(toVertex);
+            } else {
+                List<Integer> toVertices = new ArrayList<>();
+                toVertices.add(toVertex);
+                map.put(fromVertex, toVertices);
+            }
+        });
+
+        return map;
     }
 
-    public boolean containsEdge(int vertexId1, int vertexId2) {
-        return adjacencyList.get(vertexId1).contains(vertexId2);
+    private Predicate<Edge> edgeEqualsPredicate(final int vertexId1, final int vertexId2) {
+        return edge -> (edge.getVertexId1() == vertexId1 && edge.getVertexId2() == vertexId2)
+                || (edge.getVertexId1() == vertexId2 && edge.getVertexId2() == vertexId1);
+    }
+
+    public boolean containsEdge(final int vertexId1, final int vertexId2) {
+        return edges.stream().anyMatch(edgeEqualsPredicate(vertexId1, vertexId2));
+    }
+
+    public void printEulerCircle() {
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        int sum = 0;
+
+        for (int i = 0; i < eulerCircle.size() - 1; ++i) {
+            final int actualVertexId = eulerCircle.get(i);
+            final int nextVertexId = eulerCircle.get(i + 1);
+
+            int distance = edges.stream()
+                    .filter(edgeEqualsPredicate(actualVertexId, nextVertexId))
+                    .findFirst()
+                    .map(Edge::getDistance)
+                    .orElseThrow(() -> new IllegalStateException(String.format("Graph doesn't contain edge between vertex %d and %d.", nextVertexId, actualVertexId)));
+
+            sum += distance;
+            final String actualVertex = vertices.get(actualVertexId).getName();
+            final String nextVertex = vertices.get(nextVertexId).getName();
+            stringBuilder.append(String.format(RESULT_LINE_TEMPLATE, i + 1, actualVertexId, nextVertexId, actualVertex, nextVertex, distance, sum));
+            stringBuilder.append("\n");
+        }
+
+        log.info("Result: \n{}", stringBuilder);
     }
 }

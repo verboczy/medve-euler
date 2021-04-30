@@ -17,11 +17,11 @@ public class EulerCircle {
 
     public EulerCircle(final Graph graph) {
         this.graph = graph;
-        this.adjacencyList = graph.copyAdjacencyList();
+        this.adjacencyList = graph.getAdjacencyList();
         this.eulerCircle = new ArrayList<>();
     }
 
-    public List<Integer> computeEulerCircle(final int startVertex) {
+    public void computeEulerCircle(final int startVertex) {
         log.info("Computing Euler circle...");
 
         eulerCircle.add(startVertex);
@@ -29,12 +29,13 @@ public class EulerCircle {
 
         log.info("Computing Euler circle finished. Euler circle is: \n{}", eulerCircle.stream().map(Object::toString).collect(Collectors.joining("-")));
 
-        return eulerCircle;
+        graph.setEulerCircle(eulerCircle);
     }
 
     private void eulerSteps(int vertex) {
         List<Integer> neighbors = adjacencyList.get(vertex);
 
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < neighbors.size(); ++i) {
             int neighbor = neighbors.get(i);
             // 1. Check if we can take this edge.
@@ -105,6 +106,4 @@ public class EulerCircle {
         }
         return count;
     }
-
-
 }
