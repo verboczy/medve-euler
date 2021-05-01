@@ -2,12 +2,11 @@ package graph;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Scanner;
 
 @Slf4j
-public class GraphReader {
+public class GraphUtil {
 
     private static final String SEPARATOR = ",";
 
@@ -34,5 +33,17 @@ public class GraphReader {
         }
         log.info("Graph was read successfully.");
         return graph;
+    }
+
+    public void write(final Graph graph, final String filename) throws IOException {
+        log.info("Writing euler circle to file [{}]...", filename);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+
+        final String content = graph.getPrintableEulerCircle();
+        writer.write(content);
+        writer.close();
+
+        log.info("Euler circle was written successfully.");
     }
 }

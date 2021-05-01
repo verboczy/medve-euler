@@ -67,7 +67,7 @@ public class Graph {
         return edges.stream().anyMatch(edgeEqualsPredicate(vertexId1, vertexId2));
     }
 
-    public void printEulerCircle() {
+    public String getPrintableEulerCircle() {
         final StringBuilder stringBuilder = new StringBuilder();
 
         int sum = 0;
@@ -90,5 +90,6 @@ public class Graph {
         }
 
         log.info("Result: \n{}", stringBuilder);
+        return stringBuilder.toString();
     }
 }

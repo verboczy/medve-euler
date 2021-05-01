@@ -9,20 +9,20 @@ import java.io.FileNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class GraphReaderTest {
+public class GraphUtilTest {
 
-    private static GraphReader graphReader;
+    private static GraphUtil graphUtil;
 
     @BeforeAll
     static void setup() {
-        graphReader = new GraphReader();
+        graphUtil = new GraphUtil();
     }
 
     @DisplayName("Graph reader - file not found")
     @Test
     void testGraphReader_fileNotFound() {
         // When - Then
-        assertThrows(FileNotFoundException.class, () -> graphReader.read("no such file"));
+        assertThrows(FileNotFoundException.class, () -> graphUtil.read("no such file"));
     }
 
     @DisplayName("Graph reader - successful")
@@ -57,7 +57,7 @@ public class GraphReaderTest {
         expectedGraph.addEdge(new Edge(5, 4, 5));
 
         // When
-        final Graph actualGraph = graphReader.read("src/test/resources/graphs/graph1.txt");
+        final Graph actualGraph = graphUtil.read("src/test/resources/graphs/graph1.txt");
 
         // Then
         assertEquals(expectedGraph, actualGraph);
