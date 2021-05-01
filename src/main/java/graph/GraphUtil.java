@@ -38,7 +38,7 @@ public class GraphUtil {
     public void write(final Graph graph, final String filename) throws IOException {
         log.info("Writing euler circle to file [{}]...", filename);
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        final BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
 
         final String content = graph.getPrintableEulerCircle();
         writer.write(content);

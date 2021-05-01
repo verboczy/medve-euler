@@ -41,6 +41,71 @@ public class Graph {
         }
     }
 
+    public void validate(final int startVertex) throws GraphValidationException {
+        if (!vertices.containsKey(startVertex)) {
+            throw new GraphValidationException("The graph doesn't contain the given vertex [%d].", startVertex);
+        }
+
+        validateEdges();
+        validateDistances();
+        validateDegrees();
+    }
+
+    private void validateEdges() throws GraphValidationException {
+        final StringBuilder errorMessages = new StringBuilder();
+        boolean hasError = false;
+        final Set<Integer> vertexIdSet = vertices.keySet();
+
+        for (final Edge edge : edges) {
+            final int vertexId1 = edge.getVertexId1();
+            if (!vertexIdSet.contains(vertexId1)) {
+                errorMessages.append(String.format("The graph doesn't contain vertex [%d].", vertexId1)).append("\n");
+                hasError = true;
+            }
+            int vertexId2 = edge.getVertexId2();
+            if (!vertexIdSet.contains(vertexId2)) {
+                errorMessages.append(String.format("The graph doesn't contain vertex [%d].", vertexId2)).append("\n");
+                hasError = true;
+            }
+        }
+
+        if (hasError) {
+            throw new GraphValidationException(errorMessages.toString());
+        }
+    }
+
+    private void validateDistances() throws GraphValidationException {
+        for (final Edge edge : edges) {
+            for (final Edge edge2 : edges) {
+                if (edge2.getDistance() < 0) {
+                    throw new GraphValidationException("The edge [%d-%d] has negative distance [%d].", edge2.getVertexId1(), edge2.getVertexId2(), edge2.getDistance());
+                }
+                if ((edge.getVertexId1() == edge2.getVertexId1() && edge.getVertexId2() == edge2.getVertexId2())
+                        || (edge.getVertexId1() == edge2.getVertexId2() && edge.getVertexId2() == edge2.getVertexId1())) {
+                    if (edge.getDistance() != edge2.getDistance()) {
+                        throw new GraphValidationException("The same edges [%d-%d] have different distances [%d, %d].", edge.getVertexId1(), edge.getVertexId2(), edge.getDistance(), edge2.getDistance());
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateDegrees() throws GraphValidationException {
+        final StringBuilder errorMessages = new StringBuilder();
+        boolean hasError = false;
+        for (final int vertexId : vertices.keySet()) {
+            final long degree = edges.stream().filter(edge -> edge.getVertexId1() == vertexId).count();
+            if (degree % 2 != 0) {
+                hasError = true;
+                errorMessages.append(String.format("Vertex %d has odd degree [%d].", vertexId, degree)).append("\n");
+            }
+        }
+
+        if (hasError) {
+            throw new GraphValidationException(errorMessages.toString());
+        }
+    }
+
     public Map<Integer, List<Integer>> getAdjacencyList() {
         Map<Integer, List<Integer>> map = new HashMap<>();
         edges.forEach(edge -> {

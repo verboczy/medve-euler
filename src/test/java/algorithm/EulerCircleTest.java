@@ -2,6 +2,7 @@ package algorithm;
 
 import graph.Edge;
 import graph.Graph;
+import graph.GraphValidationException;
 import graph.Vertex;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,7 +21,7 @@ public class EulerCircleTest {
     @DisplayName("Graph 1")
     @ValueSource(ints = {1, 2, 3, 4, 5})
     @ParameterizedTest(name = "{index} - Starting from vertex {0}")
-    void graph1_test(final int startingVertexId) {
+    void graph1_test(final int startingVertexId) throws GraphValidationException {
         // Given
         final Graph graph = new Graph();
         graph.addVertex(new Vertex(1, "1"));
@@ -61,7 +62,7 @@ public class EulerCircleTest {
     @DisplayName("Graph 2")
     @ValueSource(ints = {1, 2, 3, 4, 5, 6, 7, 8})
     @ParameterizedTest(name = "{index} - Starting from vertex {0}")
-    void graph2_test(final int startingVertexId) {
+    void graph2_test(final int startingVertexId) throws GraphValidationException {
         // Given
         final Graph graph = new Graph();
         graph.addVertex(new Vertex(1, "1"));

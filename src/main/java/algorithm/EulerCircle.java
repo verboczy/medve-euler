@@ -1,6 +1,7 @@
 package algorithm;
 
 import graph.Graph;
+import graph.GraphValidationException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -21,8 +22,10 @@ public class EulerCircle {
         this.eulerCircle = new ArrayList<>();
     }
 
-    public void computeEulerCircle(final int startVertex) {
+    public void computeEulerCircle(final int startVertex) throws GraphValidationException {
         log.info("Computing Euler circle...");
+
+        graph.validate(startVertex);
 
         eulerCircle.add(startVertex);
         eulerSteps(startVertex);

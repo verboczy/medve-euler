@@ -3,6 +3,7 @@ package main;
 import algorithm.EulerCircle;
 import graph.Graph;
 import graph.GraphUtil;
+import graph.GraphValidationException;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
@@ -21,9 +22,11 @@ public class Main {
             EulerCircle eulerCircle = new EulerCircle(graph);
             eulerCircle.computeEulerCircle(arguments.startingVertex);
             graphUtil.write(graph, arguments.outputFilename);
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException fileNotFoundException) {
             log.error("File [{}] is not found.", arguments.inputFilename);
-        } catch (IOException ioException) {
+        } catch (final GraphValidationException graphValidationException) {
+            log.error(graphValidationException.getMessage());
+        } catch (final IOException ioException) {
             log.error("Could not write graph to file [{}].", arguments.outputFilename);
         }
     }
@@ -40,9 +43,9 @@ public class Main {
 
         final Options options = new Options();
         options.addOption(new Option(helpShort, helpLong, false, "Prints this help message."));
-        options.addOption(new Option(startShort, startLong, true, "The id of the starting vertex."));
-        options.addOption(new Option(inputShort, inputLong, true, "The input file, that contains the graph."));
-        options.addOption(new Option(outputShort, outputLong, true, "The path of the output file, that will contain the result."));
+        options.addOption(new Option(startShort, startLong, true, "The id of the starting vertex. Mandatory."));
+        options.addOption(new Option(inputShort, inputLong, true, "The input file, that contains the graph. Mandatory."));
+        options.addOption(new Option(outputShort, outputLong, true, "The path of the output file, that will contain the result. Mandatory."));
 
         final CommandLineParser parser = new DefaultParser();
         try {
