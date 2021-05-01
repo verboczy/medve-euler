@@ -48,4 +48,4 @@ I based my program on the algorithm, and solution from this [site](https://www.g
 
 [https://courses.lumenlearning.com/wmopen-mathforliberalarts/chapter/introduction-euler-paths/](https://courses.lumenlearning.com/wmopen-mathforliberalarts/chapter/introduction-euler-paths/)
 
-[https://web.mit.edu/urban_or_book/www/book/chapter6/6.4.4.html]([https://web.mit.edu/urban_or_book/www/book/chapter6/6.4.4.html])
+[https://web.mit.edu/urban_or_book/www/book/chapter6/6.4.4.html](https://web.mit.edu/urban_or_book/www/book/chapter6/6.4.4.html)
