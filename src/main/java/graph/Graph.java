@@ -23,6 +23,10 @@ public class Graph {
         this.eulerCircle = new ArrayList<>();
     }
 
+    public int getVertexCount() {
+        return vertices.size();
+    }
+
     public void addVertex(final Vertex vertex) {
         final int identifier = vertex.getIdentifier();
         if (vertices.containsKey(identifier)) {
