@@ -1,6 +1,7 @@
 package main;
 
 import algorithm.EulerCircle;
+import algorithm.Eulerization;
 import graph.Graph;
 import graph.GraphUtil;
 import graph.GraphValidationException;
@@ -19,14 +20,20 @@ public class Main {
         try {
             GraphUtil graphUtil = new GraphUtil();
             Graph graph = graphUtil.read(arguments.inputFilename);
+
+            Eulerization eulerization = new Eulerization();
+            eulerization.eulerizeGraph(graph);
+
             EulerCircle eulerCircle = new EulerCircle(graph);
             eulerCircle.computeEulerCircle(arguments.startingVertex);
             graphUtil.write(graph, arguments.outputFilename);
         } catch (final FileNotFoundException fileNotFoundException) {
             log.error("File [{}] is not found.", arguments.inputFilename);
-        } catch (final GraphValidationException graphValidationException) {
+        }
+        catch (final GraphValidationException graphValidationException) {
             log.error(graphValidationException.getMessage());
-        } catch (final IOException ioException) {
+        }
+        catch (final IOException ioException) {
             log.error("Could not write graph to file [{}].", arguments.outputFilename);
         }
     }

@@ -13,12 +13,14 @@ public class Graph {
     private static final String RESULT_LINE_TEMPLATE = "%d,%d,%d,%s,%s,%d,%d";
 
     private Map<Integer, Vertex> vertices;
+    private Map<Integer, Integer> vertexSerials;
     private List<Edge> edges;
 
     private List<Integer> eulerCircle;
 
     public Graph() {
         this.vertices = new HashMap<>();
+        this.vertexSerials = new HashMap<>();
         this.edges = new ArrayList<>();
         this.eulerCircle = new ArrayList<>();
     }
@@ -27,12 +29,21 @@ public class Graph {
         return vertices.size();
     }
 
+    public int getVertexSerialByVertexId(final int vertexId) {
+        return vertices.get(vertexId).getSerial();
+    }
+
+    public int getVertexIdByVertexSerial(final int serial) {
+        return vertexSerials.get(serial);
+    }
+
     public void addVertex(final Vertex vertex) {
         final int identifier = vertex.getIdentifier();
         if (vertices.containsKey(identifier)) {
             log.warn("Graph already contains vertex with id {}.", identifier);
         } else {
             vertices.put(identifier, vertex);
+            vertexSerials.put(vertex.getSerial(), identifier);
         }
     }
 
@@ -110,6 +121,32 @@ public class Graph {
         }
     }
 
+    public List<Integer> getVertexSerialsWithOddDegree() {
+        final List<Integer> verticesWithOddDegree = new ArrayList<>();
+
+        for (final int vertexId : vertices.keySet()) {
+            final long degree = edges.stream().filter(edge -> edge.getVertexId1() == vertexId).count();
+            if (degree % 2 != 0) {
+                verticesWithOddDegree.add(getVertexSerialByVertexId(vertexId));
+            }
+        }
+
+        return verticesWithOddDegree;
+    }
+
+    public List<Integer> getVerticesWithOddDegree() {
+        final List<Integer> verticesWithOddDegree = new ArrayList<>();
+
+        for (final int vertexId : vertices.keySet()) {
+            final long degree = edges.stream().filter(edge -> edge.getVertexId1() == vertexId).count();
+            if (degree % 2 != 0) {
+                verticesWithOddDegree.add(vertexId);
+            }
+        }
+
+        return verticesWithOddDegree;
+    }
+
     public Map<Integer, List<Integer>> getAdjacencyList() {
         Map<Integer, List<Integer>> map = new HashMap<>();
         edges.forEach(edge -> {
@@ -134,6 +171,12 @@ public class Graph {
 
     public boolean containsEdge(final int vertexId1, final int vertexId2) {
         return edges.stream().anyMatch(edgeEqualsPredicate(vertexId1, vertexId2));
+    }
+
+    public void duplicateEdge(final int u, final int v) throws GraphValidationException {
+        final Edge edge = edges.stream().filter(e -> e.getVertexId1() == u && e.getVertexId2() == v).findFirst().orElseThrow(() -> new GraphValidationException(String.format("Graph doesn't have edge between %d and %d.", u, v)));
+        addEdge(new Edge(edge.getVertexId1(), edge.getVertexId2(), edge.getDistance()));
+        addEdge(new Edge(edge.getVertexId2(), edge.getVertexId1(), edge.getDistance()));
     }
 
     public String getPrintableEulerCircle() {
