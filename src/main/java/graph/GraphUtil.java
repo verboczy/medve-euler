@@ -16,6 +16,7 @@ public class GraphUtil {
         Scanner scanner = new Scanner(new File(filename));
         final Graph graph = new Graph();
 
+        int serial = 0;
         while (scanner.hasNext()) {
             final String line = scanner.nextLine();
             log.trace("Read line: [{}]", line);
@@ -23,7 +24,8 @@ public class GraphUtil {
             final String[] words = line.split(SEPARATOR);
             final int vertexId = Integer.parseInt(words[0]);
             final String vertexName = words[1];
-            final Vertex vertex = new Vertex(vertexId, vertexName);
+            final Vertex vertex = new Vertex(serial, vertexId, vertexName);
+            ++serial;
             graph.addVertex(vertex);
             for (int i = 2; i < words.length - 1; i += 2) {
                 final int toVertex = Integer.parseInt(words[i]);

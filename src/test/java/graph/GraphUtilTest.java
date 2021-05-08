@@ -30,11 +30,11 @@ public class GraphUtilTest {
     void testGraphReader() throws FileNotFoundException {
         // Given
         Graph expectedGraph = new Graph();
-        expectedGraph.addVertex(new Vertex(1, "Name for vertex 1"));
-        expectedGraph.addVertex(new Vertex(2, "Name for vertex 2"));
-        expectedGraph.addVertex(new Vertex(3, "Name for vertex 3"));
-        expectedGraph.addVertex(new Vertex(4, "Name for vertex 4"));
-        expectedGraph.addVertex(new Vertex(5, "Name for vertex 5"));
+        expectedGraph.addVertex(new Vertex(0, 1, "Name for vertex 1"));
+        expectedGraph.addVertex(new Vertex(1, 2, "Name for vertex 2"));
+        expectedGraph.addVertex(new Vertex(2, 3, "Name for vertex 3"));
+        expectedGraph.addVertex(new Vertex(3, 4, "Name for vertex 4"));
+        expectedGraph.addVertex(new Vertex(4, 5, "Name for vertex 5"));
         expectedGraph.addEdge(new Edge(1, 2, 10));
         expectedGraph.addEdge(new Edge(1, 3, 10));
         expectedGraph.addEdge(new Edge(1, 4, 15));

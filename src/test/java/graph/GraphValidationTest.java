@@ -21,10 +21,10 @@ public class GraphValidationTest {
     @BeforeEach
     void setup() {
         graph = new Graph();
-        graph.addVertex(new Vertex(VERTEX_ID1, "Vertex 1"));
-        graph.addVertex(new Vertex(VERTEX_ID2, "Vertex 2"));
-        graph.addVertex(new Vertex(VERTEX_ID3, "Vertex 3"));
-        graph.addVertex(new Vertex(VERTEX_ID4, "Vertex 4"));
+        graph.addVertex(new Vertex(0, VERTEX_ID1, "Vertex 1"));
+        graph.addVertex(new Vertex(1, VERTEX_ID2, "Vertex 2"));
+        graph.addVertex(new Vertex(2, VERTEX_ID3, "Vertex 3"));
+        graph.addVertex(new Vertex(3, VERTEX_ID4, "Vertex 4"));
         graph.addEdge(new Edge(VERTEX_ID1, VERTEX_ID2, DISTANCE));
         graph.addEdge(new Edge(VERTEX_ID2, VERTEX_ID1, DISTANCE));
         graph.addEdge(new Edge(VERTEX_ID2, VERTEX_ID3, DISTANCE));
