@@ -43,7 +43,7 @@ public class EulerCircle {
             int neighbor = neighbors.get(i);
             // 1. Check if we can take this edge.
             if (isValidNextEdge(vertex, neighbor)) {
-                log.debug("Next visited is edge is from {} to {}.", vertex, neighbor);
+                log.debug("Next visited edge is from {} to {}.", vertex, neighbor);
                 // 2. Take this edge.
                 eulerCircle.add(neighbor);
                 // 3. Remove this edge from adjacency list, because we don't need it anymore, it is already visited.
