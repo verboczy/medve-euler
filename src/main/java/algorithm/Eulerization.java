@@ -6,7 +6,9 @@ import graph.GraphValidationException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class Eulerization {
@@ -17,35 +19,61 @@ public class Eulerization {
         log.info("Eulerizing graph...");
 
         List<Integer> verticesWithOddDegree = graph.getVertexSerialsWithOddDegree();
-        List<Integer> notPaired = new ArrayList<>(verticesWithOddDegree);
 
         FloydWarshallResult floydWarshallResult = floydWarshall(graph);
         int[][] distance = floydWarshallResult.getDistance();
 
-        // TODO: run this from every vertex from verticesWithOddDegree, and choose the one with the minimal length
-        for (int u : verticesWithOddDegree) {
-            if (!notPaired.contains(u)) {
-                continue;
-            }
+        int minimalPairingCost = INFINITE;
+        Map<Integer, Integer> minimalPairing = new HashMap<>();
+        for (int startIndex = 0; startIndex < verticesWithOddDegree.size(); ++startIndex) {
+            final List<Integer> notPaired = new ArrayList<>(verticesWithOddDegree);
+            int index = startIndex;
 
-            int minDistance = INFINITE;
-            int min = u;
-            for (int v : notPaired) {
-                if (u == v) {
+            int actualPairingCost = 0;
+            final Map<Integer, Integer> actualPairing = new HashMap<>();
+            while (!notPaired.isEmpty()) {
+                if (index == verticesWithOddDegree.size()) {
+                    index = 0;
+                }
+
+                final int u = verticesWithOddDegree.get(index);
+                if (!notPaired.contains(u)) {
+                    ++index;
                     continue;
                 }
 
-                if (distance[u][v] < minDistance) {
-                    minDistance = distance[u][v];
-                    min = v;
+                int minDistance = INFINITE;
+                int min = u;
+                for (int v : notPaired) {
+                    if (u == v) {
+                        continue;
+                    }
+                    if (distance[u][v] < minDistance) {
+                        minDistance = distance[u][v];
+                        min = v;
+                    }
                 }
+                actualPairingCost += minDistance;
+                actualPairing.put(u, min);
+
+                notPaired.remove((Integer) u);
+                notPaired.remove((Integer) min);
+
+                ++index;
             }
-            notPaired.remove((Integer) u);
-            notPaired.remove((Integer) min);
 
-            duplicateEdges(graph, floydWarshallResult.getPathBetweenTwoVertices(u, min));
+            if (actualPairingCost < minimalPairingCost) {
+                log.trace("Pairing cost [{} - pairing {}] is lower than [{} - pairing {}].", actualPairingCost, actualPairing, minimalPairingCost, minimalPairing);
+                minimalPairing = actualPairing;
+                minimalPairingCost = actualPairingCost;
+            }
+        }
 
-            log.debug("Paired [{}] to [{}], with [{}] distance.", u, min, minDistance);
+        for (Map.Entry<Integer, Integer> pair : minimalPairing.entrySet()) {
+            final int u = pair.getKey();
+            final int v = pair.getValue();
+            duplicateEdges(graph, floydWarshallResult.getPathBetweenTwoVertices(u, v));
+            log.debug("Paired [{}] to [{}].", u, v);
         }
 
         log.info("Eulerizing finished");
