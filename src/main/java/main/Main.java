@@ -1,6 +1,7 @@
 package main;
 
 import algorithm.EulerCircle;
+import algorithm.EulerCircle2;
 import algorithm.Eulerization;
 import graph.Graph;
 import graph.GraphUtil;
@@ -21,10 +22,14 @@ public class Main {
             GraphUtil graphUtil = new GraphUtil();
             Graph graph = graphUtil.read(arguments.inputFilename);
 
+            graph.validate2();
+
             Eulerization eulerization = new Eulerization();
             eulerization.eulerizeGraph(graph);
 
-            EulerCircle eulerCircle = new EulerCircle(graph);
+
+//            System.out.println("asd");
+            EulerCircle2 eulerCircle = new EulerCircle2(graph);
             eulerCircle.computeEulerCircle(arguments.startingVertex);
             graphUtil.write(graph, arguments.outputFilename);
         } catch (final FileNotFoundException fileNotFoundException) {

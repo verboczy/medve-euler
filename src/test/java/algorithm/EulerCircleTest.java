@@ -50,7 +50,7 @@ public class EulerCircleTest {
         graph.addEdge(new Edge(5, 3, DISTANCE));
         graph.addEdge(new Edge(5, 4, DISTANCE));
 
-        final EulerCircle eulerCircle = new EulerCircle(graph);
+        final EulerCircle2 eulerCircle = new EulerCircle2(graph);
 
         // When
         eulerCircle.computeEulerCircle(startingVertexId);
@@ -108,7 +108,7 @@ public class EulerCircleTest {
         graph.addEdge(new Edge(8, 7, DISTANCE));
         graph.addEdge(new Edge(8, 8, DISTANCE));
 
-        final EulerCircle eulerCircle = new EulerCircle(graph);
+        final EulerCircle2 eulerCircle = new EulerCircle2(graph);
 
         // When
         eulerCircle.computeEulerCircle(startingVertexId);

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Data
@@ -64,6 +65,15 @@ public class Graph {
         validateEdges();
         validateDistances();
         validateDegrees();
+    }
+
+    public void validate2() {
+        for (Edge edge : edges) {
+            if (edges.stream().noneMatch(e -> e.getVertexId1() == edge.getVertexId2() && e.getVertexId2() == edge.getVertexId1())) {
+                log.error("Edge ({} - {}) does not have a pair", edge.getVertexId1(), edge.getVertexId2());
+            }
+
+        }
     }
 
     private void validateEdges() throws GraphValidationException {
@@ -145,6 +155,14 @@ public class Graph {
         }
 
         return verticesWithOddDegree;
+    }
+
+    public Map<Integer, List<Edge>> getAdjacencyListEdges() {
+        final Map<Integer, List<Edge>> adjacencyList = new HashMap<>();
+        for (Integer u : vertices.keySet()) {
+            adjacencyList.put(u, edges.stream().filter(edge -> edge.getVertexId1() == u).collect(Collectors.toList()));
+        }
+        return adjacencyList;
     }
 
     public Map<Integer, List<Integer>> getAdjacencyList() {

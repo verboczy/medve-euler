@@ -19,6 +19,10 @@ public class Eulerization {
         log.info("Eulerizing graph...");
 
         List<Integer> verticesWithOddDegree = graph.getVertexSerialsWithOddDegree();
+        if (verticesWithOddDegree.isEmpty()) {
+            log.debug("No need for Eulerization, each vertex has even degree.");
+            return;
+        }
 
         FloydWarshallResult floydWarshallResult = floydWarshall(graph);
         int[][] distance = floydWarshallResult.getDistance();
