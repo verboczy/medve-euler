@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Data
@@ -13,14 +14,28 @@ public class Graph {
     private static final String RESULT_LINE_TEMPLATE = "%d,%d,%d,%s,%s,%d,%d";
 
     private Map<Integer, Vertex> vertices;
+    private Map<Integer, Integer> vertexSerials;
     private List<Edge> edges;
 
     private List<Integer> eulerCircle;
 
     public Graph() {
         this.vertices = new HashMap<>();
+        this.vertexSerials = new HashMap<>();
         this.edges = new ArrayList<>();
         this.eulerCircle = new ArrayList<>();
+    }
+
+    public int getVertexCount() {
+        return vertices.size();
+    }
+
+    public int getVertexSerialByVertexId(final int vertexId) {
+        return vertices.get(vertexId).getSerial();
+    }
+
+    public int getVertexIdByVertexSerial(final int serial) {
+        return vertexSerials.get(serial);
     }
 
     public void addVertex(final Vertex vertex) {
@@ -29,6 +44,7 @@ public class Graph {
             log.warn("Graph already contains vertex with id {}.", identifier);
         } else {
             vertices.put(identifier, vertex);
+            vertexSerials.put(vertex.getSerial(), identifier);
         }
     }
 
@@ -41,14 +57,32 @@ public class Graph {
         }
     }
 
-    public void validate(final int startVertex) throws GraphValidationException {
+    public void eulerValidation(final int startVertex) throws GraphValidationException {
         if (!vertices.containsKey(startVertex)) {
             throw new GraphValidationException("The graph doesn't contain the given vertex [%d].", startVertex);
         }
 
+        prevalidate();
         validateEdges();
         validateDistances();
         validateDegrees();
+    }
+
+    public void prevalidate() throws GraphValidationException {
+        final StringBuilder errorMessages = new StringBuilder();
+        boolean hasError = false;
+        for (Edge edge : edges) {
+            if (edges.stream().noneMatch(e -> e.getVertexId1() == edge.getVertexId2() && e.getVertexId2() == edge.getVertexId1())) {
+                hasError = true;
+                final String errorMessage = String.format("Edge (%s) does not have a pair.", edge.formatDetailed());
+                errorMessages.append(errorMessage).append("\n");
+                log.error(errorMessage);
+            }
+        }
+
+        if (hasError) {
+            throw new GraphValidationException(errorMessages.toString());
+        }
     }
 
     private void validateEdges() throws GraphValidationException {
@@ -106,6 +140,53 @@ public class Graph {
         }
     }
 
+    public void deleteExtraEdges() {
+        final Map<Edge, Integer> extraEdges = new HashMap<>();
+        for (final Edge edge : edges) {
+            final int count = (int) edges.stream().filter(e -> e.equals(edge)).count();
+            if (count > 2) {
+                extraEdges.put(edge, count);
+            }
+        }
+
+        for (final Map.Entry<Edge, Integer> entry : extraEdges.entrySet()) {
+            final Edge edge = entry.getKey();
+            final int count = entry.getValue();
+            if (count % 2 == 0) {
+                log.debug("Deleting extra edge ({}), because it is not needed {} times, only twice.", edge.format(), count);
+                for (int i = 1; i <= count - 2; ++i) {
+                    edges.remove(edge);
+                }
+            } else {
+                log.debug("Deleting extra edge ({}), because it is not needed {} times, only once.", edge.format(), count);
+                for (int i = 1; i <= count - 1; ++i) {
+                    edges.remove(edge);
+                }
+            }
+        }
+    }
+
+    public List<Integer> getVertexSerialsWithOddDegree() {
+        final List<Integer> verticesWithOddDegree = new ArrayList<>();
+
+        for (final int vertexId : vertices.keySet()) {
+            final long degree = edges.stream().filter(edge -> edge.getVertexId1() == vertexId).count();
+            if (degree % 2 != 0) {
+                verticesWithOddDegree.add(getVertexSerialByVertexId(vertexId));
+            }
+        }
+
+        return verticesWithOddDegree;
+    }
+
+    public Map<Integer, List<Edge>> getAdjacencyListEdges() {
+        final Map<Integer, List<Edge>> adjacencyList = new HashMap<>();
+        for (Integer u : vertices.keySet()) {
+            adjacencyList.put(u, edges.stream().filter(edge -> edge.getVertexId1() == u).collect(Collectors.toList()));
+        }
+        return adjacencyList;
+    }
+
     public Map<Integer, List<Integer>> getAdjacencyList() {
         Map<Integer, List<Integer>> map = new HashMap<>();
         edges.forEach(edge -> {
@@ -130,6 +211,12 @@ public class Graph {
 
     public boolean containsEdge(final int vertexId1, final int vertexId2) {
         return edges.stream().anyMatch(edgeEqualsPredicate(vertexId1, vertexId2));
+    }
+
+    public void duplicateEdge(final int u, final int v) throws GraphValidationException {
+        final Edge edge = edges.stream().filter(e -> e.getVertexId1() == u && e.getVertexId2() == v).findFirst().orElseThrow(() -> new GraphValidationException(String.format("Graph doesn't have edge between %d and %d.", u, v)));
+        addEdge(new Edge(edge.getVertexId1(), edge.getVertexId2(), edge.getDistance()));
+        addEdge(new Edge(edge.getVertexId2(), edge.getVertexId1(), edge.getDistance()));
     }
 
     public String getPrintableEulerCircle() {

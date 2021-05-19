@@ -24,11 +24,11 @@ public class EulerCircleTest {
     void graph1_test(final int startingVertexId) throws GraphValidationException {
         // Given
         final Graph graph = new Graph();
-        graph.addVertex(new Vertex(1, "1"));
-        graph.addVertex(new Vertex(2, "2"));
-        graph.addVertex(new Vertex(3, "3"));
-        graph.addVertex(new Vertex(4, "4"));
-        graph.addVertex(new Vertex(5, "5"));
+        graph.addVertex(new Vertex(0, 1, "1"));
+        graph.addVertex(new Vertex(1, 2, "2"));
+        graph.addVertex(new Vertex(2, 3, "3"));
+        graph.addVertex(new Vertex(3, 4, "4"));
+        graph.addVertex(new Vertex(4, 5, "5"));
         graph.addEdge(new Edge(1, 2, DISTANCE));
         graph.addEdge(new Edge(1, 3, DISTANCE));
         graph.addEdge(new Edge(1, 4, DISTANCE));
@@ -65,14 +65,14 @@ public class EulerCircleTest {
     void graph2_test(final int startingVertexId) throws GraphValidationException {
         // Given
         final Graph graph = new Graph();
-        graph.addVertex(new Vertex(1, "1"));
-        graph.addVertex(new Vertex(2, "2"));
-        graph.addVertex(new Vertex(3, "3"));
-        graph.addVertex(new Vertex(4, "4"));
-        graph.addVertex(new Vertex(5, "5"));
-        graph.addVertex(new Vertex(6, "6"));
-        graph.addVertex(new Vertex(7, "7"));
-        graph.addVertex(new Vertex(8, "8"));
+        graph.addVertex(new Vertex(0, 1, "1"));
+        graph.addVertex(new Vertex(1, 2, "2"));
+        graph.addVertex(new Vertex(2, 3, "3"));
+        graph.addVertex(new Vertex(3, 4, "4"));
+        graph.addVertex(new Vertex(4, 5, "5"));
+        graph.addVertex(new Vertex(5, 6, "6"));
+        graph.addVertex(new Vertex(6, 7, "7"));
+        graph.addVertex(new Vertex(7, 8, "8"));
         graph.addEdge(new Edge(1, 1, DISTANCE));
         graph.addEdge(new Edge(1, 2, DISTANCE));
         graph.addEdge(new Edge(1, 3, DISTANCE));

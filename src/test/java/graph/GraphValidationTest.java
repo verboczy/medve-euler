@@ -21,10 +21,10 @@ public class GraphValidationTest {
     @BeforeEach
     void setup() {
         graph = new Graph();
-        graph.addVertex(new Vertex(VERTEX_ID1, "Vertex 1"));
-        graph.addVertex(new Vertex(VERTEX_ID2, "Vertex 2"));
-        graph.addVertex(new Vertex(VERTEX_ID3, "Vertex 3"));
-        graph.addVertex(new Vertex(VERTEX_ID4, "Vertex 4"));
+        graph.addVertex(new Vertex(0, VERTEX_ID1, "Vertex 1"));
+        graph.addVertex(new Vertex(1, VERTEX_ID2, "Vertex 2"));
+        graph.addVertex(new Vertex(2, VERTEX_ID3, "Vertex 3"));
+        graph.addVertex(new Vertex(3, VERTEX_ID4, "Vertex 4"));
         graph.addEdge(new Edge(VERTEX_ID1, VERTEX_ID2, DISTANCE));
         graph.addEdge(new Edge(VERTEX_ID2, VERTEX_ID1, DISTANCE));
         graph.addEdge(new Edge(VERTEX_ID2, VERTEX_ID3, DISTANCE));
@@ -45,7 +45,7 @@ public class GraphValidationTest {
         final String expectedErrorMessage = String.format("The graph doesn't contain the given vertex [%d].", notValidStartingVertex);
 
         // When
-        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.validate(notValidStartingVertex));
+        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.eulerValidation(notValidStartingVertex));
 
         // Then
         assertEquals(expectedErrorMessage, graphValidationException.getMessage());
@@ -56,12 +56,12 @@ public class GraphValidationTest {
     void edgeValidation() {
         // Given
         final int nonExistingVertexId = 404;
-        final String expectedErrorMessage = String.format("The graph doesn't contain vertex [%d].\n", nonExistingVertexId);
+        final String expectedErrorMessage = String.format("Edge (%d --> %d (distance: %d, not visited)) does not have a pair.\n", nonExistingVertexId, VERTEX_ID1, DISTANCE);
 
         graph.addEdge(new Edge(nonExistingVertexId, VERTEX_ID1, DISTANCE));
 
         // When
-        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.validate(validStartingVertex));
+        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.eulerValidation(validStartingVertex));
 
         // Then
         assertEquals(expectedErrorMessage, graphValidationException.getMessage());
@@ -72,12 +72,12 @@ public class GraphValidationTest {
     void edgeValidation_otherVertex() {
         // Given
         final int nonExistingVertexId = 404;
-        final String expectedErrorMessage = String.format("The graph doesn't contain vertex [%d].\n", nonExistingVertexId);
+        final String expectedErrorMessage = String.format("Edge (%d --> %d (distance: %d, not visited)) does not have a pair.\n", VERTEX_ID1, nonExistingVertexId, DISTANCE);
 
         graph.addEdge(new Edge(VERTEX_ID1, nonExistingVertexId, DISTANCE));
 
         // When
-        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.validate(validStartingVertex));
+        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.eulerValidation(validStartingVertex));
 
         // Then
         assertEquals(expectedErrorMessage, graphValidationException.getMessage());
@@ -93,7 +93,7 @@ public class GraphValidationTest {
         graph.addEdge(new Edge(VERTEX_ID1, VERTEX_ID2, negativeDistance));
 
         // When
-        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.validate(validStartingVertex));
+        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.eulerValidation(validStartingVertex));
 
         // Then
         assertEquals(expectedErrorMessage, graphValidationException.getMessage());
@@ -109,7 +109,7 @@ public class GraphValidationTest {
         graph.addEdge(new Edge(VERTEX_ID1, VERTEX_ID2, invalidDistance));
 
         // When
-        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.validate(validStartingVertex));
+        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.eulerValidation(validStartingVertex));
 
         // Then
         assertEquals(expectedErrorMessage, graphValidationException.getMessage());
@@ -127,7 +127,7 @@ public class GraphValidationTest {
         graph.addEdge(new Edge(VERTEX_ID2, VERTEX_ID1, DISTANCE));
 
         // When
-        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.validate(validStartingVertex));
+        final GraphValidationException graphValidationException = assertThrows(GraphValidationException.class, () -> graph.eulerValidation(validStartingVertex));
 
         // Then
         assertEquals(expectedErrorMessage, graphValidationException.getMessage());
