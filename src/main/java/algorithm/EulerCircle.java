@@ -11,13 +11,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class EulerCircle2 {
+public class EulerCircle {
 
     private final Graph graph;
     private final Map<Integer, List<Edge>> adjacencyList;
     private final List<Integer> eulerCircle;
 
-    public EulerCircle2(final Graph graph) {
+    public EulerCircle(final Graph graph) {
         this.graph = graph;
         this.adjacencyList = graph.getAdjacencyListEdges();
         this.eulerCircle = new ArrayList<>();
