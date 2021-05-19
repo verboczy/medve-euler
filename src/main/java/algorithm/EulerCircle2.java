@@ -26,7 +26,7 @@ public class EulerCircle2 {
     public void computeEulerCircle(final int startVertex) throws GraphValidationException {
         log.info("Computing Euler circle...");
 
-        graph.validate(startVertex);
+        graph.eulerValidation(startVertex);
 
         eulerCircle.add(startVertex);
         eulerSteps(startVertex);
@@ -41,15 +41,9 @@ public class EulerCircle2 {
         final List<Edge> neighbors = adjacencyList.get(vertex).stream().filter(e -> !e.isVisited()).collect(Collectors.toList());
         for (Edge neighbor : neighbors) {
             final Edge edgePair = getEdgePair(neighbor);
-            if (edgePair == null) {
-                log.warn("hiba lehet...");
-            }
             // 1. Check if we can take this edge.
             if (!neighbor.isVisited() && isValidNextEdge(neighbor, edgePair)) {
-                log.debug("Next visited edge is from {} to {}.", neighbor.getVertexId1(), neighbor.getVertexId2());
-                if (edgePair == null) {
-                    log.warn("hiba lesz...");
-                }
+                log.debug("Next visited edge is {}.", neighbor.format());
                 // 2. Take this edge.
                 eulerCircle.add(neighbor.getVertexId2());
                 // 3. Remove this edge from adjacency list, because we don't need it anymore, it is already visited.
@@ -59,20 +53,6 @@ public class EulerCircle2 {
                 eulerSteps(neighbor.getVertexId2());
             }
         }
-    }
-
-    private void visitEdge(final Edge edge) {
-        edge.setVisited(true);
-        //adjacencyList.get(edge.getVertexId2()).stream().filter(e -> e.getVertexId2() == edge.getVertexId1()).findFirst().orElseThrow().setVisited(true);
-    }
-
-    private void unvisitEdge(final Edge edge) {
-        edge.setVisited(false);
-        //adjacencyList.get(edge.getVertexId2()).stream().filter(e -> e.getVertexId2() == edge.getVertexId1()).findFirst().orElseThrow().setVisited(false);
-    }
-
-    Edge getEdgePair(Edge edge) {
-        return adjacencyList.get(edge.getVertexId2()).stream().filter(e -> !e.isVisited() && e.getVertexId2() == edge.getVertexId1()).findFirst().orElse(null);
     }
 
     private boolean isValidNextEdge(final Edge edge, final Edge edgePair) {
@@ -85,20 +65,17 @@ public class EulerCircle2 {
         // 1. Count how many vertices are reachable now.
         List<Integer> isVisited = new ArrayList<>();
         int countBeforeRemove = countReachableVertices(edge.getVertexId1(), isVisited);
-        // 2. Remove the edge under investigation.
-        if (edgePair == null) {
-            log.warn("hiba lehet...");
-        }
+        // 2. Remove (visit) the edge under investigation.
         visitEdge(edge);
         visitEdge(edgePair);
         // 3. Count how many vertices are reachable after the removal.
         isVisited = new ArrayList<>();
         int countAfterRemove = countReachableVertices(edge.getVertexId1(), isVisited);
-        // 4. Restore the deleted edge, because we have not taken it yet, we have just tested it.
+        // 4. Restore (unvisit) the deleted edge, because we have not taken it yet, we have just tested it.
         unvisitEdge(edge);
         unvisitEdge(edgePair);
 
-        log.trace("Remove edge: [{}]-[{}]. Reachable vertices before removal: {}, and after removal: {}.", edge.getVertexId1(), edge.getVertexId2(), countBeforeRemove, countAfterRemove);
+        log.trace("Testing edge: {}. Reachable vertices before removal: {}, and after removal: {}.", edge.format(), countBeforeRemove, countAfterRemove);
 
         // 5. If they are not equal, then the graph is separated to more components, by taking the edge. So we must not choose this edge for now.
         return countBeforeRemove == countAfterRemove;
@@ -117,4 +94,17 @@ public class EulerCircle2 {
         }
         return count;
     }
+
+    Edge getEdgePair(Edge edge) {
+        return adjacencyList.get(edge.getVertexId2()).stream().filter(e -> !e.isVisited() && e.getVertexId2() == edge.getVertexId1()).findFirst().orElse(null);
+    }
+
+    private void visitEdge(final Edge edge) {
+        edge.setVisited(true);
+    }
+
+    private void unvisitEdge(final Edge edge) {
+        edge.setVisited(false);
+    }
+
 }
