@@ -15,4 +15,12 @@ public class Edge {
         this.distance = distance;
         this.visited = false;
     }
+
+    public String format() {
+        return String.format("%d --> %d", vertexId1, vertexId2);
+    }
+
+    public String formatDetailed() {
+        return String.format("%d --> %d (distance: %d, %s)", vertexId1, vertexId2, distance, visited ? "visited" : "not visited");
+    }
 }

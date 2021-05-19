@@ -57,22 +57,31 @@ public class Graph {
         }
     }
 
-    public void validate(final int startVertex) throws GraphValidationException {
+    public void eulerValidation(final int startVertex) throws GraphValidationException {
         if (!vertices.containsKey(startVertex)) {
             throw new GraphValidationException("The graph doesn't contain the given vertex [%d].", startVertex);
         }
 
+        prevalidate();
         validateEdges();
         validateDistances();
         validateDegrees();
     }
 
-    public void validate2() {
+    public void prevalidate() throws GraphValidationException {
+        final StringBuilder errorMessages = new StringBuilder();
+        boolean hasError = false;
         for (Edge edge : edges) {
             if (edges.stream().noneMatch(e -> e.getVertexId1() == edge.getVertexId2() && e.getVertexId2() == edge.getVertexId1())) {
-                log.error("Edge ({} - {}) does not have a pair", edge.getVertexId1(), edge.getVertexId2());
+                hasError = true;
+                final String errorMessage = String.format("Edge (%s) does not have a pair.", edge.formatDetailed());
+                errorMessages.append(errorMessage).append("\n");
+                log.error(errorMessage);
             }
+        }
 
+        if (hasError) {
+            throw new GraphValidationException(errorMessages.toString());
         }
     }
 
@@ -131,6 +140,32 @@ public class Graph {
         }
     }
 
+    public void deleteExtraEdges() {
+        final Map<Edge, Integer> extraEdges = new HashMap<>();
+        for (final Edge edge : edges) {
+            final int count = (int) edges.stream().filter(e -> e.equals(edge)).count();
+            if (count > 2) {
+                extraEdges.put(edge, count);
+            }
+        }
+
+        for (final Map.Entry<Edge, Integer> entry : extraEdges.entrySet()) {
+            final Edge edge = entry.getKey();
+            final int count = entry.getValue();
+            if (count % 2 == 0) {
+                log.debug("Deleting extra edge ({}), because it is not needed {} times, only twice.", edge.format(), count);
+                for (int i = 1; i <= count - 2; ++i) {
+                    edges.remove(edge);
+                }
+            } else {
+                log.debug("Deleting extra edge ({}), because it is not needed {} times, only once.", edge.format(), count);
+                for (int i = 1; i <= count - 1; ++i) {
+                    edges.remove(edge);
+                }
+            }
+        }
+    }
+
     public List<Integer> getVertexSerialsWithOddDegree() {
         final List<Integer> verticesWithOddDegree = new ArrayList<>();
 
@@ -138,19 +173,6 @@ public class Graph {
             final long degree = edges.stream().filter(edge -> edge.getVertexId1() == vertexId).count();
             if (degree % 2 != 0) {
                 verticesWithOddDegree.add(getVertexSerialByVertexId(vertexId));
-            }
-        }
-
-        return verticesWithOddDegree;
-    }
-
-    public List<Integer> getVerticesWithOddDegree() {
-        final List<Integer> verticesWithOddDegree = new ArrayList<>();
-
-        for (final int vertexId : vertices.keySet()) {
-            final long degree = edges.stream().filter(edge -> edge.getVertexId1() == vertexId).count();
-            if (degree % 2 != 0) {
-                verticesWithOddDegree.add(vertexId);
             }
         }
 
