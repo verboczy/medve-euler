@@ -1,7 +1,6 @@
 package main;
 
 import algorithm.EulerCircle;
-import algorithm.EulerCircle2;
 import algorithm.Eulerization;
 import graph.Graph;
 import graph.GraphUtil;
@@ -9,28 +8,39 @@ import graph.GraphValidationException;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Main {
 
     public static void main(final String[] args) {
+        StopWatch stopWatch = StopWatch.createStarted();
+        log.info("Program started.");
+
         final Arguments arguments = getArguments(args);
+
         try {
-            GraphUtil graphUtil = new GraphUtil();
-            Graph graph = graphUtil.read(arguments.inputFilename);
+            // 1. Create the graph.
+            final GraphUtil graphUtil = new GraphUtil();
+            final Graph graph = graphUtil.read(arguments.inputFilename);
 
-            graph.validate2();
+            // 2. Validate the graph.
+            graph.prevalidate();
 
-            Eulerization eulerization = new Eulerization();
+            // 3. Eulerize the graph.
+            final Eulerization eulerization = new Eulerization();
             eulerization.eulerizeGraph(graph);
+            graph.deleteExtraEdges();
 
-
-//            System.out.println("asd");
-            EulerCircle2 eulerCircle = new EulerCircle2(graph);
+            // 4. Compute Euler circle.
+            final EulerCircle eulerCircle = new EulerCircle(graph);
             eulerCircle.computeEulerCircle(arguments.startingVertex);
+
+            // 5. Save the result.
             graphUtil.write(graph, arguments.outputFilename);
         } catch (final FileNotFoundException fileNotFoundException) {
             log.error("File [{}] is not found.", arguments.inputFilename);
@@ -41,6 +51,8 @@ public class Main {
         catch (final IOException ioException) {
             log.error("Could not write graph to file [{}].", arguments.outputFilename);
         }
+        stopWatch.stop();
+        log.info("Program ended in: {} ({} ms)", stopWatch.formatTime(), stopWatch.getTime(TimeUnit.MILLISECONDS));
     }
 
     private static Arguments getArguments(final String[] args) {
@@ -94,6 +106,7 @@ public class Main {
             log.error("The id of the starting vertex must be an integer.", numberFormatException);
             System.exit(-3);
         }
+
         return new Arguments("", "", -1);
     }
 
